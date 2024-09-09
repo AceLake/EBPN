@@ -1,0 +1,26 @@
+﻿@model EBPN_Network.Models.OutreachRequest
+
+@{
+    ViewData["Title"] = "Outreach Request Details";
+}
+
+<h2>@Model.Title</h2>
+<p>@Model.Description</p>
+
+<h3>Comments</h3>
+
+<ul>
+    @foreach (var comment in Model.Comments)
+    {
+        <li>@comment.Text</li>
+    }
+</ul>
+
+<form asp-action="AddComment" method="post">
+    <input type="hidden" asp-for="RequestID" value="@Model.RequestID" />
+    <div class="form-group">
+        <label for="commentText">Add a Comment:</label>
+        <textarea id="commentText" name="commentText" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit Comment</button>
+</form>

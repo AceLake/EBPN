@@ -1,0 +1,25 @@
+﻿@model IEnumerable<EBPN_Network.Models.OutreachRequest>
+
+@{
+    ViewData["Title"] = "Outreach Requests";
+}
+
+<h2>Outreach Requests</h2>
+
+@if (!Model.Any())
+{
+    <p>No requests found.</p>
+}
+else
+{
+    <ul>
+        @foreach (var request in Model)
+        {
+            <li>
+                <a asp-action="Details" asp-route-id="@request.RequestID">@request.Title</a>
+            </li>
+        }
+    </ul>
+}
+
+<a class="btn btn-primary" href="/OutreachRequest/Create">Create New Request</a>
