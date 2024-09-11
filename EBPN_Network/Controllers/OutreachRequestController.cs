@@ -79,6 +79,7 @@ public class OutreachRequestController : Controller
         try
         {
             var requests = await _requestDAO.GetAll();
+            // Gets all of the comments connected to the request
             foreach (var request in requests)
             {
                 request.Comments = await _commentDAO.GetByRequestId(request.RequestID);
