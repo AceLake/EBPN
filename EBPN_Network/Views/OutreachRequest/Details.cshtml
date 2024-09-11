@@ -10,9 +10,12 @@
 <h3>Comments</h3>
 
 <ul>
-    @foreach (var comment in Model.Comments)
+    @if (Model.Comments != null)
     {
-        <li>@comment.Text</li>
+        @foreach (var comment in Model.Comments)
+        {
+            <li>@comment.Text</li>
+        }
     }
 </ul>
 

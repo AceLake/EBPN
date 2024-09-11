@@ -1,10 +1,13 @@
 ﻿using EBPN_Network.Models;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
 using System;
 using System.ComponentModel.DataAnnotations;
 namespace EBPN_Network.Models;
 public class OutreachRequest
 {
-    [Key]
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
     public string RequestID { get; set; }
 
     [Required]

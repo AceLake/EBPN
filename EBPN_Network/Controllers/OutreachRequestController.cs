@@ -29,11 +29,9 @@ public class OutreachRequestController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(OutreachRequest request)
     {
-        if (ModelState.IsValid)
-        {
+
             await _requestDAO.Create(request);
             return RedirectToAction("Index");
-        }
         return View(request);
     }
 
