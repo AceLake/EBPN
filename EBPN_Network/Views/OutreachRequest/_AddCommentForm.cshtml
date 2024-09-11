@@ -1,6 +1,6 @@
 ﻿@model EBPN_Network.Models.Comment
 
-<form asp-action="CreateComment" method="post">
+<form asp-controller="Comment" asp-action="Create" method="post">
     <div class="form-group">
         <label asp-for="Text"></label>
         <textarea asp-for="Text" class="form-control"></textarea>

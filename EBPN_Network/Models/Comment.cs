@@ -1,9 +1,12 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
+using System;
 using System.ComponentModel.DataAnnotations;
 namespace EBPN_Network.Models;
 public class Comment
 {
-    [Key]
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
     public string CommentID { get; set; }
 
     [Required]
@@ -16,4 +19,9 @@ public class Comment
 
     public string RequestID { get; set; }
     public OutreachRequest OutreachRequest { get; set; }
+
+    public Comment()
+    {
+
+    }
 }

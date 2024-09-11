@@ -8,7 +8,7 @@ public class CommentDAO
 
     public CommentDAO()
     {
-        var client = new MongoClient("your-mongo-db-connection-string");
+        var client = new MongoClient("mongodb+srv://Ace:squirty115@cluster0.og5dfyn.mongodb.net/?retryWrites=true&w=majority");
         var database = client.GetDatabase("OutreachAppDB");
         _comments = database.GetCollection<Comment>("comments");
     }

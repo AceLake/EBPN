@@ -1,14 +1,18 @@
-﻿using EBPN_Network.Models;
+﻿using Amazon.Runtime.Internal;
+using EBPN_Network.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 public class OutreachRequestController : Controller
 {
     private readonly OutreachRequestDAO _requestDAO;
+    private readonly CommentDAO _commentDAO;
 
     public OutreachRequestController()
     {
         _requestDAO = new OutreachRequestDAO();
+        _commentDAO = new CommentDAO();
     }
 
     // GET: OutreachRequest/Index
@@ -29,16 +33,28 @@ public class OutreachRequestController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(OutreachRequest request)
     {
-
-            await _requestDAO.Create(request);
+        OutreachRequest newRequest = new OutreachRequest (
+            request.RequestID,
+            request.Title,
+            request.Description,
+            "English",
+            "United States of America",
+            "Incomplete",
+            DateTime.Now,
+            "asdfasdf"
+        );
+            
+            await _requestDAO.Create(newRequest);
             return RedirectToAction("Index");
         return View(request);
     }
 
     // GET: OutreachRequest/Details/5
-    public IActionResult Details(string id)
+    public async Task<IActionResult> Details(string id)
     {
-        var request = _requestDAO.GetById(id);
+        OutreachRequest request = _requestDAO.GetById(id);
+        request.Comments = await _commentDAO.GetByRequestId(id);
+
         if (request == null)
         {
             return NotFound();
@@ -55,6 +71,26 @@ public class OutreachRequestController : Controller
             return NotFound();
         }
         return View(request);
+    }
+
+    [HttpGet("api/requests")] // Define the route for the API endpoint
+    public async Task<IActionResult> GetAllJSON()
+    {
+        try
+        {
+            var requests = await _requestDAO.GetAll();
+            foreach (var request in requests)
+            {
+                request.Comments = await _commentDAO.GetByRequestId(request.RequestID);
+
+            }
+            return Ok(requests); // Automatically serializes the data to JSON
+        }
+        catch (Exception ex)
+        {
+            // Log exception
+            return StatusCode(500, "Internal server error");
+        }
     }
 
     // POST: OutreachRequest/Edit/5

@@ -13,20 +13,18 @@ public class CommentController : Controller
 
     // POST: Comment/Create
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(string requestId, string commentText)
+    public IActionResult Create(Comment model)
     {
-        if (!string.IsNullOrEmpty(commentText))
-        {
-            var comment = new Comment
-            {
-                RequestID = requestId,
-                Text = commentText,
-                CreatedDate = DateTime.Now
-            };
-            await _commentDAO.Create(comment);
-        }
-        return RedirectToAction("Details", "OutreachRequest", new { id = requestId });
+
+            // Save the comment to the database
+            _commentDAO.Create(model);
+
+            // Redirect back to the details page
+            return RedirectToAction("Details", "OutreachRequest", new { id = model.RequestID });
+        
+
+        // If the model state is not valid, re-render the form with validation errors
+        //return View(model);
     }
 
     // GET: Comment/Delete/5

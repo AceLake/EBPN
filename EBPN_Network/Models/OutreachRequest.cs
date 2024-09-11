@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace EBPN_Network.Models;
 public class OutreachRequest
 {
+
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string RequestID { get; set; }
@@ -34,4 +35,19 @@ public class OutreachRequest
 
     public ICollection<Comment> Comments { get; set; }
     public ICollection<FileAttachment> FileAttachments { get; set; }
+
+    public OutreachRequest() { }
+    public OutreachRequest(string requestID, string title, string description, string language, string country, string status, DateTime createdDate,string userID)
+    {
+        RequestID = requestID;
+        Title = title;
+        Description = description;
+        Language = language;
+        Country = country;
+        Status = status;
+        CreatedDate = createdDate;
+        UserID = userID;
+        Comments = new List<Comment>();
+        FileAttachments = new List<FileAttachment>();
+    }
 }
