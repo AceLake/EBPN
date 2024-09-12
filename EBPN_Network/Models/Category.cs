@@ -1,9 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
+using System.ComponentModel.DataAnnotations;
 namespace EBPN_Network.Models;
 public class Category
 {
-    [Key]
-    public int CategoryID { get; set; }
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string CategoryID { get; set; }
 
     [Required]
     [StringLength(100)]
