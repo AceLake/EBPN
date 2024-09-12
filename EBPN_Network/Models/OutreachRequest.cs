@@ -31,11 +31,6 @@ public class OutreachRequest
 
     public string UserID { get; set; }
 
-    public User User { get; set; } // Foreign key relationship
-
-    public ICollection<Comment> Comments { get; set; }
-    public ICollection<FileAttachment> FileAttachments { get; set; }
-
     public OutreachRequest() { }
     public OutreachRequest(string requestID, string title, string description, string language, string country, string status, DateTime createdDate,string userID)
     {
@@ -47,7 +42,5 @@ public class OutreachRequest
         Status = status;
         CreatedDate = createdDate;
         UserID = userID;
-        Comments = new List<Comment>();
-        FileAttachments = new List<FileAttachment>();
     }
 }

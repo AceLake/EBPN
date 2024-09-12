@@ -7,12 +7,10 @@ using System.Xml.Linq;
 public class OutreachRequestController : Controller
 {
     private readonly OutreachRequestDAO _requestDAO;
-    private readonly CommentDAO _commentDAO;
 
     public OutreachRequestController()
     {
         _requestDAO = new OutreachRequestDAO();
-        _commentDAO = new CommentDAO();
     }
 
     // GET: OutreachRequest/Index
@@ -53,7 +51,6 @@ public class OutreachRequestController : Controller
     public async Task<IActionResult> Details(string id)
     {
         OutreachRequest request = _requestDAO.GetById(id);
-        request.Comments = await _commentDAO.GetByRequestId(id);
 
         if (request == null)
         {
@@ -79,12 +76,6 @@ public class OutreachRequestController : Controller
         try
         {
             var requests = await _requestDAO.GetAll();
-            // Gets all of the comments connected to the request
-            foreach (var request in requests)
-            {
-                request.Comments = await _commentDAO.GetByRequestId(request.RequestID);
-
-            }
             return Ok(requests); // Automatically serializes the data to JSON
         }
         catch (Exception ex)
