@@ -31,18 +31,23 @@ public class OutreachRequestController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(OutreachRequest request)
     {
-        OutreachRequest newRequest = new OutreachRequest (
-            request.RequestID,
+        OutreachRequest newRequest = new OutreachRequest(
+            request.UserID,
             request.Title,
             request.Description,
             "English",
             "United States of America",
-            "Incomplete",
+            false,
             DateTime.Now,
-            "asdfasdf"
+            DateTime.Now,
+            "asdfasdf",
+            "asdfasdf",
+            "asdfasdf",
+            false,
+            false
         );
-            
-            await _requestDAO.Create(newRequest);
+
+        await _requestDAO.Create(newRequest);
             return RedirectToAction("Index");
         return View(request);
     }
