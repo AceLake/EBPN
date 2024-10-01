@@ -19,7 +19,11 @@ public class OutreachRequest
     public string Description { get; set; }
 
     [StringLength(50)]
-    public string Language { get; set; }
+    public string PostLanguage { get; set; }
+
+    [StringLength(50)]
+    public string ResponseLanguage { get; set; }
+
 
     [StringLength(100)]
     public string Country { get; set; }
@@ -40,8 +44,8 @@ public class OutreachRequest
     public bool Flagged { get; set; }
 
     public bool Disclaimer { get; set; }
-    
-        
+
+
 
     public OutreachRequest() { }
     public OutreachRequest(string requestID, string title, string description, string language, string country, bool fulfilled, DateTime createdDate, DateTime updatedDate, string userID, string email, string whatsApp, bool flagged, bool disclaimer)
@@ -49,7 +53,6 @@ public class OutreachRequest
         RequestID = requestID;
         Title = title;
         Description = description;
-        Language = language;
         Country = country;
         Fulfilled = fulfilled;
         CreatedDate = createdDate;

@@ -1,90 +1,96 @@
-﻿using EBPN_Network.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
+using EBPN_Network.Models;
+using FirebaseAdmin.Auth;
 
-public class UserController : Controller
+namespace EBPN_Network.Controllers
 {
-    // Here
-    private readonly UserDAO _userDAO;
-
-    public UserController()
+    public class UserController : Controller
     {
-        _userDAO = new UserDAO();
-    }
 
-    // GET: User/Register
-    public IActionResult Register()
-    {
-        return View();
-    }
+        private readonly UserDAO _userDao;
 
-    // POST: User/Register
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(User user)
-    {
-        if (ModelState.IsValid)
+        public UserController(UserDAO userDao)
         {
-            await _userDAO.Create(user);
-            return RedirectToAction("Login");
+            _userDao = userDao;
         }
-        return View(user);
-    }
 
-    // GET: User/Login
-    public IActionResult Login()
-    {
-        return View();
-    }
-
-    // POST: User/Login
-    [HttpPost]
-    public IActionResult Login(string email, string password)
-    {
-        var user = _userDAO.GetByEmailAndPassword(email, password);
-        if (user == null)
+        // GET: /User/Register
+        [HttpGet]
+        public IActionResult Register()
         {
-            ModelState.AddModelError("", "Invalid email or password");
             return View();
         }
 
-        // Handle login logic here, e.g., setting session or cookie
-        return RedirectToAction("UserDashboard");
-    }
-
-    // GET: User/EditProfile
-    public IActionResult EditProfile(string id)
-    {
-        var user = _userDAO.GetById(id);
-        if (user == null)
+        // POST: /User/Register
+        // Register new user
+        [HttpPost]
+        public async Task<IActionResult> Register(string email, string password)
         {
-            return NotFound();
-        }
-        return View(user);
-    }
+            try
+            {
+                var userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(new UserRecordArgs
+                {
+                    Email = email,
+                    Password = password
+                });
 
-    // POST: User/EditProfile
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult EditProfile(string id, User updatedUser)
-    {
-        if (id != updatedUser.UserID)
+                var user = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(email);
+
+                User newUser = new User();
+                newUser.Uid = user.Uid;
+                newUser.Email = email;
+
+                _userDao.Create(newUser);
+
+                // Handle successful registration
+                return RedirectToAction("Login");
+            }
+            catch (FirebaseAuthException ex)
+            {
+                // Handle registration errors
+                ModelState.AddModelError("", ex.Message);
+                return View();
+            }
+        }
+
+        // GET: /User/Login
+        [HttpGet]
+        public IActionResult Login()
         {
-            return NotFound();
+            return View();
         }
 
-        if (ModelState.IsValid)
+        public IActionResult Logout()
         {
-            _userDAO.Update(id, updatedUser);
-            return RedirectToAction("UserDashboard");
+            Response.Cookies.Delete("auth_token");
+            return RedirectToAction("Login", "User");
         }
-        return View(updatedUser);
-    }
 
-    // GET: User/UserDashboard
-    public IActionResult UserDashboard()
-    {
-        // Implement user-specific dashboard logic here
-        return View();
+        // POST: /User/Login
+        // Login user
+        [Route("User/Login")]
+        [HttpPost]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            try
+            {
+                // Authenticate the user with Firebase
+                var user = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(email);
+
+                // Validate the user credentials (add password validation logic here)
+
+                // Generate a custom token
+                var customToken = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(user.Uid);
+
+                // Send the custom token to the client
+                return Json(new { token = customToken });
+            }
+            catch (FirebaseAuthException ex)
+            {
+                // Handle login errors
+                ModelState.AddModelError("", ex.Message);
+                return View();
+            }
+        }
     }
 }

@@ -1,32 +1,31 @@
-﻿using EBPN_Network.Models;
-using System.Collections.Generic;
+﻿using Google.Cloud.Firestore;
 using System.ComponentModel.DataAnnotations;
 namespace EBPN_Network.Models;
+
+[FirestoreData]
 public class User
 {
-    [Key]
-    public string UserID { get; set; }
+    [FirestoreProperty]
+    public string Id { get; set; }  // Unique identifier for the user (e.g., UUID or Firestore document ID)
 
+    public string Uid { get; set; }
+
+    [FirestoreProperty]
     [Required]
-    [StringLength(100)]
-    public string FirstName { get; set; }
+    public string Email { get; set; }  // Email address of the user
 
-    [Required]
-    [StringLength(100)]
-    public string LastName { get; set; }
+    [FirestoreProperty]
+    public string FirstName { get; set; }  // Optional: User's first name
 
-    [Required]
-    [EmailAddress]
-    public string Email { get; set; }
+    [FirestoreProperty]
+    public string LastName { get; set; }  // Optional: User's last name
 
-    [Required]
-    public string PasswordHash { get; set; }
+    [FirestoreProperty]
+    public string PhoneNumber { get; set; }  // Optional: User's phone number
 
-    [StringLength(100)]
-    public string Country { get; set; }
+    [FirestoreProperty]
+    public DateTime CreatedAt { get; set; }  // Optional: Timestamp of when the user was created
 
-    [StringLength(50)]
-    public string PreferredLanguage { get; set; }
-
-    public ICollection<OutreachRequest> Requests { get; set; }
+    [FirestoreProperty]
+    public DateTime? UpdatedAt { get; set; }  // Optional: Timestamp of the last update
 }

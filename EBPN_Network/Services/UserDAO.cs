@@ -1,50 +1,66 @@
-﻿using EBPN_Network.Models;
-using MongoDB.Driver;
+﻿using Google.Cloud.Firestore;
 using System.Threading.Tasks;
+using EBPN_Network.Models;
 
 public class UserDAO
 {
-    private readonly IMongoCollection<User> _users;
+    private readonly FirestoreDb _firestoreDb;
+    private readonly string _collectionName = "users"; // The name of your Firestore collection
+
+    public UserDAO(FirestoreDb firestoreDb)
+    {
+        _firestoreDb = firestoreDb;
+    }
 
     public UserDAO()
     {
-        var client = new MongoClient("mongodb+srv://Ace:squirty115@cluster0.og5dfyn.mongodb.net/?retryWrites=true&w=majority");
-        var database = client.GetDatabase("EBPN");
-        _users = database.GetCollection<User>("users");
     }
 
     // Create a new user
     public async Task Create(User user)
     {
-        await _users.InsertOneAsync(user);
+        DocumentReference docRef = _firestoreDb.Collection(_collectionName).Document(user.Id);
+        await docRef.SetAsync(user);
     }
 
     // Get user by ID
-    public User GetById(string id)
+    public async Task<User> GetById(string id)
     {
-        var filter = Builders<User>.Filter.Eq(u => u.UserID, id);
-        return _users.Find(filter).FirstOrDefault();
+        DocumentReference docRef = _firestoreDb.Collection(_collectionName).Document(id);
+        DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
+        if (snapshot.Exists)
+        {
+            return snapshot.ConvertTo<User>();
+        }
+        return null;
     }
 
     // Get user by email and password
-    public User GetByEmailAndPassword(string email, string password)
+    public async Task<User> GetByEmailAndPassword(string email, string password)
     {
-        var filter = Builders<User>.Filter.Eq(u => u.Email, email) &
-                     Builders<User>.Filter.Eq(u => u.PasswordHash, password);
-        return _users.Find(filter).FirstOrDefault();
+        QuerySnapshot snapshot = await _firestoreDb.Collection(_collectionName)
+            .WhereEqualTo("Email", email)
+            .WhereEqualTo("Password", password)
+            .GetSnapshotAsync();
+
+        if (snapshot.Documents.Count > 0)
+        {
+            return snapshot.Documents[0].ConvertTo<User>();
+        }
+        return null;
     }
 
     // Update user
-    public void Update(string id, User updatedUser)
+    public async Task Update(string id, User updatedUser)
     {
-        var filter = Builders<User>.Filter.Eq(u => u.UserID, id);
-        _users.ReplaceOne(filter, updatedUser);
+        DocumentReference docRef = _firestoreDb.Collection(_collectionName).Document(id);
+        await docRef.SetAsync(updatedUser, SetOptions.MergeAll);
     }
 
     // Delete user
-    public void Delete(string id)
+    public async Task Delete(string id)
     {
-        var filter = Builders<User>.Filter.Eq(u => u.UserID, id);
-        _users.DeleteOne(filter);
+        DocumentReference docRef = _firestoreDb.Collection(_collectionName).Document(id);
+        await docRef.DeleteAsync();
     }
 }
