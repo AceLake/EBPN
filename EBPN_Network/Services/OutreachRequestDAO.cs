@@ -6,10 +6,8 @@ public class OutreachRequestDAO
 {
     private readonly IMongoCollection<OutreachRequest> _outreachRequests;
 
-    public OutreachRequestDAO()
+    public OutreachRequestDAO(IMongoDatabase database)
     {
-        var client = new MongoClient("mongodb+srv://Ace:squirty115@cluster0.og5dfyn.mongodb.net/?retryWrites=true&w=majority");
-        var database = client.GetDatabase("OutreachAppDB");
         _outreachRequests = database.GetCollection<OutreachRequest>("outreachRequests");
     }
 

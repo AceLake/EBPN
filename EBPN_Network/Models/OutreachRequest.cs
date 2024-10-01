@@ -45,22 +45,4 @@ public class OutreachRequest
 
     public bool Disclaimer { get; set; }
 
-
-
-    public OutreachRequest() { }
-    public OutreachRequest(string requestID, string title, string description, string language, string country, bool fulfilled, DateTime createdDate, DateTime updatedDate, string userID, string email, string whatsApp, bool flagged, bool disclaimer)
-    {
-        RequestID = requestID;
-        Title = title;
-        Description = description;
-        Country = country;
-        Fulfilled = fulfilled;
-        CreatedDate = createdDate;
-        UpdatedDate = updatedDate;
-        UserID = userID;
-        Email = email;
-        WhatsApp = whatsApp;
-        Flagged = flagged;
-        Disclaimer = disclaimer;
-    }
 }

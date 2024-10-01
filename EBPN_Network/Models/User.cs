@@ -1,31 +1,47 @@
-﻿using Google.Cloud.Firestore;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.ComponentModel.DataAnnotations;
-namespace EBPN_Network.Models;
 
-[FirestoreData]
-public class User
+namespace EBPN_Network.Models
 {
-    [FirestoreProperty]
-    public string Id { get; set; }  // Unique identifier for the user (e.g., UUID or Firestore document ID)
+    public class User
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }  // Unique identifier (MongoDB ObjectId)
 
-    public string Uid { get; set; }
+        [BsonElement("email")]
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }  // User's email address
 
-    [FirestoreProperty]
-    [Required]
-    public string Email { get; set; }  // Email address of the user
+        [BsonElement("passwordHash")]
+        [Required]
+        public string PasswordHash { get; set; }  // Hashed password for security
 
-    [FirestoreProperty]
-    public string FirstName { get; set; }  // Optional: User's first name
+        [BsonElement("firstName")]
+        public string FirstName { get; set; }  // Optional: User's first name
 
-    [FirestoreProperty]
-    public string LastName { get; set; }  // Optional: User's last name
+        [BsonElement("lastName")]
+        public string LastName { get; set; }  // Optional: User's last name
 
-    [FirestoreProperty]
-    public string PhoneNumber { get; set; }  // Optional: User's phone number
+        [BsonElement("phoneNumber")]
+        public string PhoneNumber { get; set; }  // Optional: User's phone number
 
-    [FirestoreProperty]
-    public DateTime CreatedAt { get; set; }  // Optional: Timestamp of when the user was created
+        [BsonElement("createdAt")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;  // Date when the user was created
 
-    [FirestoreProperty]
-    public DateTime? UpdatedAt { get; set; }  // Optional: Timestamp of the last update
+        [BsonElement("updatedAt")]
+        public DateTime? UpdatedAt { get; set; }  // Optional: Date when the user was last updated
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
+    }
 }

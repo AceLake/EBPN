@@ -1,66 +1,63 @@
-﻿using Google.Cloud.Firestore;
+﻿using EBPN_Network.Models;
+using MongoDB.Driver;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using EBPN_Network.Models;
 
-public class UserDAO
+namespace EBPN_Network.Services
 {
-    private readonly FirestoreDb _firestoreDb;
-    private readonly string _collectionName = "users"; // The name of your Firestore collection
-
-    public UserDAO(FirestoreDb firestoreDb)
+    public class UserDAO
     {
-        _firestoreDb = firestoreDb;
-    }
+        private readonly IMongoCollection<User> _users;
 
-    public UserDAO()
-    {
-    }
-
-    // Create a new user
-    public async Task Create(User user)
-    {
-        DocumentReference docRef = _firestoreDb.Collection(_collectionName).Document(user.Id);
-        await docRef.SetAsync(user);
-    }
-
-    // Get user by ID
-    public async Task<User> GetById(string id)
-    {
-        DocumentReference docRef = _firestoreDb.Collection(_collectionName).Document(id);
-        DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
-        if (snapshot.Exists)
+        // Constructor that initializes the MongoDB collection
+        public UserDAO(IMongoDatabase database)
         {
-            return snapshot.ConvertTo<User>();
+            _users = database.GetCollection<User>("users");
         }
-        return null;
-    }
 
-    // Get user by email and password
-    public async Task<User> GetByEmailAndPassword(string email, string password)
-    {
-        QuerySnapshot snapshot = await _firestoreDb.Collection(_collectionName)
-            .WhereEqualTo("Email", email)
-            .WhereEqualTo("Password", password)
-            .GetSnapshotAsync();
-
-        if (snapshot.Documents.Count > 0)
+        // Create a new user
+        public async Task CreateUserAsync(User user)
         {
-            return snapshot.Documents[0].ConvertTo<User>();
+            user.CreatedAt = DateTime.UtcNow;
+            await _users.InsertOneAsync(user);
         }
-        return null;
-    }
 
-    // Update user
-    public async Task Update(string id, User updatedUser)
-    {
-        DocumentReference docRef = _firestoreDb.Collection(_collectionName).Document(id);
-        await docRef.SetAsync(updatedUser, SetOptions.MergeAll);
-    }
+        // Retrieve a user by their unique identifier (Id)
+        public async Task<User> GetUserByIdAsync(string id)
+        {
+            return await _users.Find(u => u.Id == id).FirstOrDefaultAsync();
+        }
 
-    // Delete user
-    public async Task Delete(string id)
-    {
-        DocumentReference docRef = _firestoreDb.Collection(_collectionName).Document(id);
-        await docRef.DeleteAsync();
+        // Update an existing user
+        public async Task UpdateUserAsync(User user)
+        {
+            user.UpdatedAt = DateTime.UtcNow;
+            var filter = Builders<User>.Filter.Eq(u => u.Id, user.Id);
+            await _users.ReplaceOneAsync(filter, user);
+        }
+
+        // Delete a user by their unique identifier
+        public async Task DeleteUserAsync(string id)
+        {
+            await _users.DeleteOneAsync(u => u.Id == id);
+        }
+
+        // Retrieve all users
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _users.Find(_ => true).ToListAsync();
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            // Define the filter to find the user by email
+            var filter = Builders<User>.Filter.Eq(u => u.Email, email);
+
+            // Query the database to find the user
+            var user = await _users.Find(filter).FirstOrDefaultAsync();
+
+            return user;  // Returns null if no user is found
+        }
     }
 }

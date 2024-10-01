@@ -1,0 +1,6 @@
+﻿{
+  "MongoDBSettings": {
+    "ConnectionString": "mongodb+srv://Ace:squirty115@cluster0.og5dfyn.mongodb.net/?retryWrites=true&w=majority",
+    "DatabaseName": "OutreachAppDB"
+  }
+}
