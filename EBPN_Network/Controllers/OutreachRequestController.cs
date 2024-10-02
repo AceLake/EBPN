@@ -48,12 +48,10 @@ namespace EBPN_Network.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(OutreachRequest request)
         {
-            if (ModelState.IsValid)
-            {
+           
                 await _outreachRequestDao.Create(request);
                 return RedirectToAction("Index");
-            }
-            return View(request);
+            
         }
 
         // GET: /OutreachRequest/Details/5
