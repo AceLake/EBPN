@@ -54,7 +54,7 @@ namespace EBPN_Network.Controllers
             
         }
 
-        // GET: /OutreachRequest/Details/5
+        // GET: /OutreachRequest/Details/id
         [HttpGet]
         public async Task<IActionResult> Details(string id)
         {
