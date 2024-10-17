@@ -36,13 +36,19 @@ jobs:
     environment:
       name: 'production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-      
+
+      # Step to login to Azure using publish profile
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_7374e3580c5b46c7aaceace57c78c12b }}
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
@@ -50,4 +56,3 @@ jobs:
           app-name: 'EBPN'
           slot-name: 'production'
           package: ./publish_output
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_7374e3580c5b46c7aaceace57c78c12b }}
