@@ -1,25 +1,103 @@
 ﻿@model IEnumerable<EBPN_Network.Models.OutreachRequest>
 
 @{
-    ViewData["Title"] = "Outreach Requests";
+    ViewData["Title"] = "";
+
+    // Categorize the requests
+    var recentPosts = Model.Take(4); // Assuming you're showing the 4 most recent requests
+    var wantedPosts = Model.Where(r => r.Category.Contains("Wanted"));
+    var offeredPosts = Model.Where(r => r.Category.Contains("Offered"));
 }
 
-<h2>Outreach Requests</h2>
+<div class="container mt-5">
 
-@if (!Model.Any())
-{
-    <p>No requests found.</p>
-}
-else
-{
-    <ul>
-        @foreach (var request in Model)
-        {
-            <li>
-                <a asp-action="Details" asp-route-id="@request.RequestID">@request.Title</a>
-            </li>
-        }
-    </ul>
-}
+    <!-- Recent Posts Section -->
+    <h3>Recent Posts</h3>
+    @if (!recentPosts.Any())
+    {
+        <p>No recent posts found.</p>
+    }
+    else
+    {
+        <div class="row mb-4">
+            @foreach (var request in recentPosts)
+            {
+                <div class="col-md-3">
+                    <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+                        <h5 class="card-title">
+                            <a asp-action="Details" asp-route-id="@request.RequestID">@request.Title</a>
+                        </h5>
+                        <p class="card-text">
+                            @{
+                                var words = @request.Description.Split(' ').Take(35);
+                                var truncatedDescription = string.Join(" ", words);
+                            }
+                            @truncatedDescription...
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 
-<a class="btn btn-primary" href="/OutreachRequest/Create">Create New Request</a>
+    <!-- Wanted Section -->
+    <h3>Wanted</h3>
+    <hr class="mb-4">
+    @if (!wantedPosts.Any())
+    {
+        <p>No wanted requests found.</p>
+    }
+    else
+    {
+        <div class="row mb-4">
+            @foreach (var request in wantedPosts)
+            {
+                <div class="col-md-3">
+                    <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+                        <h5 class="card-title">
+                            <a asp-action="Details" asp-route-id="@request.RequestID">@request.Title</a>
+                        </h5>
+                        <p class="card-text">
+                            @{
+                                var words = @request.Description.Split(' ').Take(35);
+                                var truncatedDescription = string.Join(" ", words);
+                            }
+                            @truncatedDescription...
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Offered Section -->
+    <h3>Offered</h3>
+    <hr class="mb-4">
+    @if (!offeredPosts.Any())
+    {
+        <p>No offered requests found.</p>
+    }
+    else
+    {
+        <div class="row mb-4">
+            @foreach (var request in offeredPosts)
+            {
+                <div class="col-md-3">
+                    <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+                        <h5 class="card-title">
+                            <a asp-action="Details" asp-route-id="@request.RequestID">@request.Title</a>
+                        </h5>
+                        <p class="card-text">
+                            @{
+                                var words = @request.Description.Split(' ').Take(35);
+                                var truncatedDescription = string.Join(" ", words);
+                            }
+                            @truncatedDescription...
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+</div>
