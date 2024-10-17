@@ -1,3 +1,6 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Build and deploy ASP.Net Core app to Azure Web App - EBPN
 
 on:
@@ -45,7 +48,7 @@ jobs:
         with:
           name: .net-app
       
-      - name: Login to Azure using Service Principal
+      - name: Login to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_3E68F78F19D848BCBD31D72246847831 }}
@@ -58,4 +61,5 @@ jobs:
         with:
           app-name: 'EBPN'
           slot-name: 'Production'
-          package: ./publish_output
+          package: .
+          
