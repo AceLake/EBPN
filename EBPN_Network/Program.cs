@@ -1,7 +1,6 @@
 using Google.Cloud.Firestore;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
-using EBPN_Network.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.DependencyInjection;
@@ -74,8 +73,6 @@ app.UseRouting();
 // Add authentication and authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseMiddleware<FirebaseAuthenticationMiddleware>();
 
 app.MapControllerRoute(
     name: "default",
